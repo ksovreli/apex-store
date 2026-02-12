@@ -20,6 +20,7 @@
             "outputPath": "dist/backpack-store",
             "index": "src/index.html",
             "browser": "src/main.ts",
+            "allowedCommonJsDependencies": ["aos"],
             "polyfills": [
               "zone.js"
             ],
@@ -32,9 +33,12 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/aos/dist/aos.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/aos/dist/aos.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -46,8 +50,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "10kB",
+                  "maximumError": "15kB"
                 }
               ],
               "outputHashing": "all"

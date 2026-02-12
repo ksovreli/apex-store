@@ -1,0 +1,43 @@
+@if (product) {
+<div class="product-page">
+    <div class="details-container">
+        <div class="visual-side">
+            <div class="image-box">
+                <img [src]="product.image" [alt]="product.name">
+            </div>
+        </div>
+
+        <div class="info-side">
+            <span class="category-tag">{{ product.category }}</span>
+            <h1>{{ product.name }}</h1>
+            
+            <div class="price-box">
+                @if (product.salePrice) {
+                    <span class="current-price">${{ product.salePrice }}</span>
+                    <span class="old-price">${{ product.price }}</span>
+                } @else {
+                    <span class="current-price">${{ product.price }}</span>
+                }
+            </div>
+
+            <p class="description">
+                Engineered for the modern explorer, the {{ product.name }} combines 
+                minimalist design with maximum durability. Built from weather-resistant 
+                materials and featuring ergonomic support for all-day carry.
+            </p>
+
+            <div class="actions">
+                <button class="buy-btn">Add to Cart</button>
+                <button class="wishlist-btn">♡</button>
+            </div>
+
+            <div class="specs">
+                <div class="spec-item"><strong>Rating:</strong> {{ product.rating }} / 5.0</div>
+                <div class="spec-item"><strong>Shipping:</strong> Free worldwide</div>
+            </div>
+        </div>
+    </div>
+</div>
+} @else {
+    <div class="loading">Finding your gear...</div>
+}
