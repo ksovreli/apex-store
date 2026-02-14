@@ -19,7 +19,6 @@
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 
         .visual-side {
-            background: #1c1c1c;
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -75,6 +74,7 @@
                 margin-bottom: 25px;
                 display: flex;
                 align-items: center;
+                font-family: Barlow, sans-serif;
 
                 .current-price {
                     color: #ffffff;
@@ -94,6 +94,7 @@
                 line-height: 1.7;
                 font-size: 16px;
                 margin-bottom: 35px;
+                font-family: Barlow, sans-serif;
             }
 
             .actions {
@@ -140,18 +141,37 @@
                 }
             }
 
-            .specs {
+            .rating {
                 display: flex;
-                flex-direction: column;
-                gap: 12px;
+                align-items: center;
+                gap: 2px;
 
-                .spec-item {
-                    font-size: 15px;
-                    color: #c0c0c0;
-                    strong {
-                        color: #ffffff;
-                        margin-right: 10px;
+                .star {
+                    font-size: 18px;
+
+                    &.full {
+                        color: #FFD700;
                     }
+
+                    &.half {
+                        position: relative;
+                        color: #ccc;
+                        background: linear-gradient(90deg, #FFD700 50%, #ccc 50%);
+                        -webkit-background-clip: text;
+                        background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                    }
+
+                    &.empty {
+                        color: #ccc;
+                    }
+                }
+
+                .rating-value {
+                    color: #888;
+                    font-size: 14px;
+                    margin-left: 5px;
+                    font-family: 'Barlow', sans-serif;
                 }
             }
         }
@@ -167,20 +187,24 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
-/* Responsive Breakpoints */
 @media (max-width: 992px) {
     .product-page {
         padding-top: 100px;
-        
+
         .details-container {
             grid-template-columns: 1fr;
             max-width: 700px;
             padding: 30px;
-            
+
             .info-side h1 {
                 font-size: 2.5rem;
             }
@@ -191,14 +215,15 @@
 @media (max-width: 600px) {
     .product-page {
         padding: 80px 15px 40px;
-        
+
         .details-container {
             padding: 20px;
             gap: 25px;
+            margin-top: 50px;
 
             .visual-side {
                 padding: 20px;
-                
+
                 img {
                     max-width: 100%;
                 }
@@ -211,6 +236,7 @@
 
                 .actions {
                     flex-direction: column;
+
                     .wishlist-btn {
                         width: 100%;
                     }

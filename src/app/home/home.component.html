@@ -1,50 +1,44 @@
 <main>
     <section class="banner-container">
-        <img class="banner-image"
-            src="/images/banner-content.png"
-            alt="Adventure">
+        <div class="banner-overlay"></div>
+
+        <img class="banner-image" src="images/banner.png" alt="Built for the journey">
 
         <div class="banner-content">
-            <h1>
-                PLAN YOUR ADVENTURE
-            </h1>
+            <h1>BUILT FOR THE JOURNEY</h1>
             <button routerLink="/products" class="shop-btn">SHOP NOW</button>
-            <i (click)="scrollTo('arrivals')" class="fa-solid fa-arrow-down"></i>
+            <i (click)="scrollTo('arrivals')" class="fa-solid fa-arrow-down animate-bounce"></i>
         </div>
     </section>
 
     <section class="arrivals-container" id="arrivals">
         <div class="new-arrivals">
             <h2 data-aos="fade-right">NEW ARRIVALS</h2>
-            <button data-aos="fade-right" class="shop-btn">SHOP NOW</button>
+            <button routerLink="/products" data-aos="fade-right" class="shop-btn">SHOP NOW</button>
         </div>
 
         <div class="product">
-            <img src="/images/advertisement-duffle-bag.avif"
-                alt="">
+            <img src="/images/ad-backpack.png" alt="">
         </div>
     </section>
 
     <section class="topics">
-        <div class="backPacks">
-            <img src="/images/backpacks-content.webp"
-                alt="">
+        <div class="backPacks" routerLink="/products" [queryParams]="{ category: 'Backpacks' }">
+            <img src="/images/backpack-topic.png" alt="Backpacks">
             <div class="overlay-container">
                 <h2>BACKPACKS</h2>
             </div>
         </div>
 
-        <div class="duffleBags">
-            <img src="/images/dufflebags-content.webp"
-                alt="">
+        <div class="duffleBags" routerLink="/products" [queryParams]="{ category: 'Duffel Bags' }">
+            <img src="/images/duffelbag-topic.png" alt="Duffle Bags">
             <div class="overlay-container">
                 <h2>DUFFLE BAGS</h2>
             </div>
         </div>
 
-        <div class="travelPacks">
-            <img src="/images/travelpacks-content.webp"
-                alt="">
+        <div class="travelPacks" routerLink="/products" [queryParams]="{ category: 'Travel Packs' }">
+            <img src="/images/travelpack-topic.png" alt="Travel Packs">
             <div class="overlay-container">
                 <h2>TRAVEL PACKS</h2>
             </div>
@@ -53,51 +47,25 @@
 
     <section class="sale-container">
         <div class="sale-header">
-            <h2>Black Friday</h2>
-            <p>50% Discount</p>
+            <h2>NOW ON SALE</h2>
+            <p>UP TO 50% OFF</p>
         </div>
 
         <div class="bags-container">
+            @for (product of saleProducts; track $index) {
             <div class="bag-card" data-aos="fade-right">
-                <img [routerLink]="['/product', 'canvas-backpack-id']" src="/images/canvas-backpack.png"
-                    alt="Canvas Backpack">
+                <img [routerLink]="['/product', 'apex-voyager-id']" [src]="product.image" [alt]="product.name">
 
-                <h3>Canvas Backpack</h3>
+                <h3>{{product.name}}</h3>
                 <div class="price">
-                    <span class="old-price">6 000,00 ₽ </span>
-                    <span class="new-price">5 400,00 ₽ </span>
+                    <span class="old-price">${{product.price}}</span>
+                    <span class="new-price">${{product.salePrice}}</span>
                 </div>
                 <div class="overlay-container">
-                    <button class="details-btn" [routerLink]="['/product', '1']">Details</button>
+                    <button class="details-btn" [routerLink]="['/product', product.id]">Details</button>
                 </div>
             </div>
-
-            <div class="bag-card" data-aos="fade-up">
-                <img [routerLink]="['/product', 'travel-pack-id']" src="images/travel-pack-(p).png"
-                    alt="Travel Pack (P)">
-
-                <h3>Travel Pack (P)</h3>
-                <div class="price">
-                    <span class="old-price">6 500,00 ₽ </span>
-                    <span class="new-price">5 200,00 ₽ </span>
-                </div>
-                <div class="overlay-container">
-                    <button class="details-btn" [routerLink]="['/product', '15']">Details</button>
-                </div>
-            </div>
-
-            <div class="bag-card" data-aos="fade-left">
-                <img [routerLink]="['/product', 'camo-backpack-id']" src="images/camo-backpack.png" alt="Camo Backpack">
-
-                <h3>Camo Backpack</h3>
-                <div class="price">
-                    <span class="old-price">6 000,00 ₽ </span>
-                    <span class="new-price">4 800,00 ₽ </span>
-                </div>
-                <div class="overlay-container">
-                    <button class="details-btn" [routerLink]="['/product', '6']">Details</button>
-                </div>
-            </div>
+            }
         </div>
     </section>
 

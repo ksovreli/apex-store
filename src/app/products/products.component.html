@@ -21,7 +21,6 @@
             <h4>Sort By</h4>
             <div class="select-wrapper">
                 <select (change)="onSortChange($event)">
-                    <option>Newest First</option>
                     <option>Price: Low to High</option>
                     <option>Price: High to Low</option>
                     <option>Top Rated</option>
@@ -32,7 +31,10 @@
 
     <main class="products-main">
         <div class="grid-header">
-            <h1>All Products</h1>
+            @if (selectedCategory === 'All Collections') { <h1>All Collections</h1> }
+            @else if (selectedCategory === 'Backpacks') { <h1>Backpacks</h1> }
+            @else if (selectedCategory === 'Duffel Bags') { <h1>Duffel Bags</h1> }
+            @else if (selectedCategory === 'Travel Packs') { <h1>Travel Packs</h1> }
             <p>Premium carry-goods for the modern traveler.</p>
         </div>
 

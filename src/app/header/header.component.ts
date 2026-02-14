@@ -22,7 +22,9 @@ export class HeaderComponent {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
-  } else {
+  }
+  
+  else {
     this.router.navigate(['/home'], { fragment: sectionId });
   }
 }
