@@ -1,0 +1,72 @@
+<div class="cart-container">
+    <div class="cart-header">
+        <h1>Your Gear</h1>
+        <span class="item-count">{{ myItems.length }} Items</span>
+    </div>
+
+    <div class="cart-content">
+        <div class="items-list">
+            @for (item of myItems; track $index) {
+            <div class="cart-card">
+                <div class="product-info">
+                    <div class="img-wrapper">
+                        <img [src]="item.image" [alt]="item.name">
+                    </div>
+                    <div class="meta">
+                        <h3>{{ item.name }}</h3>
+                        <p class="category">{{ item.category }}</p>
+                    </div>
+                </div>
+
+                <div class="price-action">
+                    <div class="qty-selector">
+                        <button (click)="changeQuantity($index, -1)">−</button>
+                        <span class="qty-number">{{ item.quantity }}</span>
+                        <button (click)="changeQuantity($index, 1)">+</button>
+                    </div>
+
+                    <span class="price">
+                        @if (item.salePrice != null) {
+                            ${{ item.salePrice * item.quantity }}
+                        }
+
+                        @else {
+                            ${{ item.price * item.quantity }}
+                        }
+                    </span>
+                    
+                    <button (click)="removeItem($index)" class="remove-btn">
+                        <span class="icon">✕</span> Remove
+                    </button>
+                </div>
+            </div>
+            }
+            
+            @empty {
+            <div class="empty-state">
+                <p>Your bag is empty.</p>
+                <button routerLink="/products" class="shop-link">Explore Collection</button>
+            </div>
+            }
+        </div>
+
+        @if (myItems.length > 0) {
+        <div class="cart-summary">
+            <h3>Summary</h3>
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span>${{ total() }}</span>
+            </div>
+            <div class="summary-row">
+                <span>Shipping</span>
+                <span class="free">Free</span>
+            </div>
+            <div class="summary-total">
+                <span>Total</span>
+                <span>${{ total() }}</span>
+            </div>
+            <button class="checkout-btn">Checkout</button>
+        </div>
+        }
+    </div>
+</div>

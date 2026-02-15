@@ -20,7 +20,7 @@ header {
         gap: 8px;
         cursor: pointer;
         z-index: 1002;
-        
+
         h2 {
             font-size: 24px;
             font-weight: 700;
@@ -37,7 +37,7 @@ header {
             gap: 35px;
 
             li {
-                font-family: "Oswald", serif;
+                font-family: "Oswald", sans-serif;
                 font-weight: bolder;
                 cursor: pointer;
 
@@ -49,6 +49,73 @@ header {
                     letter-spacing: 1.5px;
 
                     &:hover {
+                        color: white;
+                    }
+                }
+            }
+        }
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        z-index: 1002;
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #EEE6E6;
+            font-size: 22px;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s ease;
+
+            &:hover {
+                color: white;
+            }
+
+            &.cart-btn .badge {
+                position: absolute;
+                top: -5px;
+                right: -10px;
+                background: #ff4d4d;
+                color: white;
+                font-size: 10px;
+                padding: 2px 6px;
+                border-radius: 10px;
+                font-family: sans-serif;
+            }
+        }
+
+        .user-dropdown {
+            position: relative;
+
+            &:hover .dropdown-menu {
+                display: flex;
+            }
+
+            .dropdown-menu {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                right: 0;
+                top: 100%;
+                background: rgba(10, 10, 10, 0.95);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                min-width: 140px;
+                padding: 10px 0;
+                border-radius: 4px;
+
+                a {
+                    color: #A29C9C;
+                    padding: 10px 20px;
+                    text-decoration: none;
+                    font-family: "Oswald", sans-serif;
+                    font-size: 14px;
+
+                    &:hover {
+                        background: rgba(255, 255, 255, 0.05);
                         color: white;
                     }
                 }
@@ -76,9 +143,18 @@ header {
             transition: all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.375);
         }
 
-        &.open span:nth-child(1) { transform: translateY(11px) rotate(45deg); }
-        &.open span:nth-child(2) { opacity: 0; transform: translateX(40px); }
-        &.open span:nth-child(3) { transform: translateY(-11px) rotate(-45deg); }
+        &.open span:nth-child(1) {
+            transform: translateY(11px) rotate(45deg);
+        }
+
+        &.open span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(40px);
+        }
+
+        &.open span:nth-child(3) {
+            transform: translateY(-11px) rotate(-45deg);
+        }
     }
 }
 
@@ -118,7 +194,6 @@ header {
 
                 li a {
                     font-size: 35px;
-                    padding: 10px 30px;
                     color: #EEE6E6;
                 }
             }
@@ -129,8 +204,7 @@ header {
 @media screen and (max-width: 415px) {
     header {
         height: 70px;
-        flex-direction: row;
-        
+
         .logo h2 {
             font-size: 20px;
         }
