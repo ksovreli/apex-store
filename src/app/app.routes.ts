@@ -6,6 +6,7 @@ import { Notfound } from './notfound/notfound';
 import { Cart } from './cart/cart';
 import { Login } from './login/login';
 import { Register } from './register/register';
+import { Wishlist } from './wishlist/wishlist';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -14,6 +15,7 @@ export const routes: Routes = [
     { path: 'product/:id', component: ProductDetailsComponent},
     { path: 'products/:category', component: ProductsComponent },
     { path: 'cart', component: Cart },
+    { path: 'wishlist', component: Wishlist },
     { path: 'login', component: Login },
     { path: 'register', component: Register },
     { path: '404', component: Notfound },

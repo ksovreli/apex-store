@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../services/product-service';
 import { Product } from '../../models/product';
 import { CartService } from '../../services/cart-service';
 import { AuthService } from '../../services/auth-service';
 import Swal from 'sweetalert2';
+import { WishlistService } from '../../services/wishlist-service';
 
 @Component({
   selector: 'app-product-details',
@@ -14,61 +15,60 @@ import Swal from 'sweetalert2';
 })
 export class ProductDetailsComponent {
 
-  constructor(private productService: ProductService, private cartService: CartService, private route: ActivatedRoute, private router: Router, private authService: AuthService) {
-    this.route.params.subscribe(params => {
-      this.productId = params['id']
-    })
-  }
+  private productService = inject(ProductService)
+  private cartService = inject(CartService)
+  private route = inject(ActivatedRoute)
+  private router = inject(Router)
+  private authService = inject(AuthService)
+  public wishlistService = inject(WishlistService)
 
   productId: number = 0
   product?: Product
 
   ngOnInit() {
-    this.productId = Number(this.route.snapshot.paramMap.get('id'))
-    this.product = this.productService.getProductsById(this.productId)
-    console.log(this.product)
-    let id = Number(this.route.snapshot.paramMap.get('id'))
-    let product = this.productService.getProductsById(id)
+    this.route.params.subscribe(params => {
+      let id = Number(this.route.snapshot.paramMap.get('id'))
+      let foundProduct = this.productService.getProductsById(id)
 
-    if (!product) {
-      this.router.navigate(['/404'], { skipLocationChange: true })
+      if (!foundProduct) {
+        this.router.navigate(['/404'], { skipLocationChange: true })
+      }
+
+      else {
+        this.productId = id
+        this.product = foundProduct
+      }
+    })
+  }
+
+  add(product: Product) {
+    if (this.authService.isLoggedIn()) {
+      this.cartService.addToCart(product)
+
+      this.showToast('Added to cart!', 'success')
     }
 
     else {
-      this.product = product
+      this.showToast("Please login first", "info")
+
+      this.router.navigateByUrl("/login")
     }
   }
 
-  add(product: any) {
-  if (this.authService.isLoggedIn()) {
-    this.cartService.addToCart(product)
-    
+  goBack(){
+    this.router.navigateByUrl("/products")
+  }
+
+  private showToast(title: string, icon: 'success' | 'info') {
     Swal.fire({
-      icon: 'success',
-      title: 'Added to Cart',
-      text: `${product.name} is ready for the expedition.`,
-      timer: 1500,
-      showConfirmButton: false,
+      title: title,
+      icon: icon,
       background: '#121212',
       color: '#fff',
-      iconColor: '#EEE6E6'
-    })
-  }
-
-  else {
-    Swal.fire({
-      icon: 'error',
-      title: 'Unauthorized',
-      text: 'You must login before placing an order.',
+      timer: 1500,
       showConfirmButton: false,
-      timer: 2000,
-      timerProgressBar: true,
-      iconColor: '#ff4d4d',
-      background: '#121212',
-      color: '#fff'
+      toast: true,
+      position: 'top-end'
     })
-
-    this.router.navigateByUrl("/login")
   }
-}
 }

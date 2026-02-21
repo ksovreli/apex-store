@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CartService } from '../services/cart-service';
 import { AuthService } from '../services/auth-service';
+import { WishlistService } from '../services/wishlist-service';
 
 @Component({
   selector: 'app-header',
@@ -13,14 +14,19 @@ import { AuthService } from '../services/auth-service';
 export class HeaderComponent {
   menuOpen = false
 
-  constructor(private router: Router, private cartService: CartService, private authService: AuthService) { }
+  constructor(private router: Router, private cartService: CartService, private authService: AuthService, private wishListService: WishlistService) { }
   
-  get isLoggedIn(): boolean{
+  isLoggedIn(): boolean{
     return this.authService.isLoggedIn()
   }
 
-  get cartCount(): number{
-    return this.cartService.items.length
+  cartCount(): number{
+    this.cartService.refreshCart()
+    return this.cartService.getItems().length
+  }
+
+  wishlistCount() {
+    return this.wishListService.items.length;
   }
 
   logout(){

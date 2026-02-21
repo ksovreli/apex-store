@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import * as AOS from 'aos';
@@ -12,8 +12,12 @@ import * as AOS from 'aos';
 })
 export class AppComponent {
   title = 'BackpackStore';
+  isLoading = true
 
   ngOnInit() {
     AOS.init()
+    setTimeout(() => {
+      this.isLoading = false
+    }, 1000)
   }
 }

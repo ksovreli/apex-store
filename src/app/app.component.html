@@ -1,11 +1,19 @@
-<header>
-  <app-header></app-header>
-</header>
+@if (isLoading) {
+  <div class="loader">
+    <div class="jimu-primary-loading"></div>
+  </div>
+}
 
-<main>
-  <router-outlet></router-outlet>
-</main>
+<div [style.visibility]="isLoading ? 'hidden' : 'visible'" [style.height]="isLoading ? '0' : 'auto'">
+  <header>
+    <app-header></app-header>
+  </header>
 
-<footer>
-  <app-footer></app-footer>
-</footer>
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer>
+    <app-footer></app-footer>
+  </footer>
+</div>

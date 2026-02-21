@@ -35,6 +35,6 @@ export class ProductService {
   }
 
   getSaleProducts() {
-    return this.products.filter(p => p.salePrice !== undefined);
+    return this.products.filter(p => p.salePrice !== undefined)
   }
 }

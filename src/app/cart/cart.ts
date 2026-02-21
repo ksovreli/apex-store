@@ -12,11 +12,17 @@ import Swal from 'sweetalert2';
 export class Cart {
 
   myItems: any[] = []
-  constructor(private cartService: CartService) { }
+
+  constructor(public cartService: CartService) { }
 
   ngOnInit() {
+    this.loadCart()
+  }
+
+  loadCart() {
     this.myItems = this.cartService.getItems()
   }
+
   removeItem(index: number) {
     Swal.fire({
       title: 'Are you sure?',
@@ -26,52 +32,39 @@ export class Cart {
       confirmButtonColor: '#121212',
       cancelButtonColor: '#ff4d4d',
       confirmButtonText: 'Yes, remove it',
-      background: '#121212',
-      color: '#fff'
+      background: '#121212', color: '#fff'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.myItems.splice(index, 1)
-        localStorage.setItem('cart', JSON.stringify(this.myItems))
-        this.cartService.items = this.myItems
-
-        Swal.fire({
-          title: 'Removed!',
-          icon: 'success',
-          background: '#121212',
-          color: '#fff',
-          timer: 1500,
-          showConfirmButton: false
-        })
+        this.cartService.removeItem(index)
+        this.loadCart()
+        this.showSuccess('Removed!')
       }
     })
   }
 
   changeQuantity(index: number, delta: number) {
     const item = this.myItems[index]
-    item.quantity += delta
-
-    if (item.quantity < 1) {
+    
+    if (item.quantity === 1 && delta === -1) {
       Swal.fire({
-        icon: "warning",
-        title: "Oops...",
-        text: "Quantity cannot be less than 1",
-        background: '#121212',
-        color: '#fff',
+        icon: "warning", title: "Oops...", text: "Minimum quantity is 1",
+        background: '#121212', color: '#fff',
       })
-      item.quantity = 1
+      return
     }
 
-    else {
-      localStorage.setItem('cart', JSON.stringify(this.myItems))
-      this.cartService.items = this.myItems
-    }
+    this.cartService.updateQuantity(index, delta)
+    this.loadCart()
   }
 
   total() {
-  return this.myItems.reduce((acc, item) => {
-    let activePrice = item.salePrice ?? item.price ?? 0
-    return acc + (activePrice * item.quantity)
-  }, 0)
-}
+    return this.myItems.reduce((acc, item) => {
+      const activePrice = item.salePrice ?? item.price ?? 0
+      return acc + (activePrice * item.quantity)
+    }, 0)
+  }
 
+  private showSuccess(msg: string) {
+    Swal.fire({ title: msg, icon: 'success', background: '#121212', color: '#fff', timer: 1500, showConfirmButton: false })
+  }
 }

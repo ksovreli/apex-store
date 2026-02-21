@@ -1,30 +1,62 @@
 import { Injectable, signal } from '@angular/core';
+import { User } from '../models/user';
 
 @Injectable({
   providedIn: 'root',
 })
+
 export class AuthService {
+  
   isLoggedIn = signal<boolean>(!!localStorage.getItem('userToken'))
 
-  private getUsers(): any[] {
-    let users = localStorage.getItem('apex_users')
+  constructor() {
+    this.autoLogin()
+  }
+
+  private getUsers(): User[] {
+    const users = localStorage.getItem('apex_users')
     return users ? JSON.parse(users) : []
   }
 
   private generateRandomToken(): string {
-    let randomPart = Math.random().toString(36).substring(2)
-    let timePart = Date.now().toString(36)
+    const randomPart = Math.random().toString(36).substring(2)
+    const timePart = Date.now().toString(36)
     return `apex_${randomPart}${timePart}`
   }
+  private autoLogin() {
+    const token = localStorage.getItem('userToken')
+    if (!token) return
 
-  login(credentials: any): { success: boolean; message: string } {
     let users = this.getUsers()
-    let user = users.find(u => u.email === credentials.email && u.password === credentials.password)
+    let matchedUser = users.find(u => u.token === token)
 
-    if (user) {
-      let token = this.generateRandomToken()
-      localStorage.setItem('userToken', token)
+    if (matchedUser) {
+      localStorage.setItem('currentUser', JSON.stringify(matchedUser))
+      this.isLoggedIn.set(true)
+    }
+    
+    else {
+      this.logout()
+    }
+  }
+
+  login(credentials: User): { success: boolean; message: string } {
+    let users = this.getUsers()
+    let userIndex = users.findIndex(
+      u => u.email === credentials.email && u.password === credentials.password
+    )
+
+    if (userIndex !== -1) {
+      let user = users[userIndex]
+
+      if (!user.token) {
+        user.token = this.generateRandomToken()
+        localStorage.setItem('apex_users', JSON.stringify(users))
+      }
+
+      localStorage.setItem('userToken', user.token)
       localStorage.setItem('currentUser', JSON.stringify(user))
+      
       this.isLoggedIn.set(true)
       return { success: true, message: 'Login successful' }
     }
@@ -32,14 +64,19 @@ export class AuthService {
     return { success: false, message: 'Invalid email or password' }
   }
 
-  register(credentials: any): { success: boolean; message: string } {
-    let users = this.getUsers()
+  register(credentials: User): { success: boolean; message: string } {
+    const users = this.getUsers()
 
     if (users.find(u => u.email === credentials.email)) {
-      return { success: false, message: 'User already exists with this email' }
+      return { success: false, message: 'User already exists' }
     }
 
-    users.push(credentials)
+    let newUser: User = { 
+      ...credentials, 
+      token: this.generateRandomToken() 
+    }
+    
+    users.push(newUser)
     localStorage.setItem('apex_users', JSON.stringify(users))
 
     return this.login(credentials)

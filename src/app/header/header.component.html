@@ -17,7 +17,7 @@
         <div class="user-dropdown">
             <button class="action-btn"><i class="fa-solid fa-circle-user"></i></button>
             <div class="dropdown-menu">
-                @if (isLoggedIn) {
+                @if (isLoggedIn()) {
                 <a (click)="logout()">Logout</a>
                 }
                 
@@ -28,10 +28,17 @@
             </div>
         </div>
 
+        <button class="action-btn wishlist-btn" routerLink="/wishlist">
+            <span class="icon"><i class="fa-solid fa-heart"></i></span>
+            @if (wishlistCount() > 0) {
+                <span class="badge">{{ wishlistCount() }}</span>
+            }
+        </button>
+
         <button class="action-btn cart-btn" routerLink="/cart">
             <span class="icon"><i class="fa-solid fa-cart-arrow-down"></i></span>
-            @if (cartCount > 0) {
-            <span class="badge">{{ cartCount }}</span>
+            @if (cartCount() > 0) {
+            <span class="badge">{{ cartCount() }}</span>
             }
         </button>
 
