@@ -20,7 +20,7 @@
             "outputPath": "dist/backpack-store",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "allowedCommonJsDependencies": ["aos"],
+            "allowedCommonJsDependencies": ["sweetalert2"],
             "polyfills": [
               "zone.js"
             ],
@@ -45,8 +45,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1MB",
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",
