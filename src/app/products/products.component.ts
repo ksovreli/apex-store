@@ -23,8 +23,11 @@ export class ProductsComponent {
   selectedSortLabel: string = 'Price: Low to High'
 
   ngOnInit() {
-    this.products = this.productService.getProducts()
-    this.selectedSortLabel = 'Recommended'
+    this.productService.getProducts().subscribe(products => {
+      this.products = products
+      this.selectedSortLabel = 'Recommended'
+      this.filterByCategory("All Collections")
+    })
 
     this.route.queryParams.subscribe(params => {
       let categoryFromUrl = params['category']
@@ -39,22 +42,24 @@ export class ProductsComponent {
     })
   }
 
-  filterByCategory(category: string) {
-    this.selectedCategory = category
-    if (category == "All Collections") {
-      this.filteredProducts = [...this.products]
-    }
+ filterByCategory(category: string) {
+  this.selectedCategory = category
 
-    else if (category == "New Arrivals") {
-      this.filteredProducts = this.products.filter(p => p.isNew)
-    }
+  if (category === "All Collections") {
+    this.filteredProducts = [...this.products]
+  } 
 
-    else {
-      this.filteredProducts = this.products.filter(p => p.category == category)
-    }
-
-    this.applySort()
+  else if (category === "New Arrivals") {
+    this.filteredProducts = this.products.filter(p => p.isNew)
   }
+
+  else {
+    this.filteredProducts = this.products.filter(p => 
+      p.categoryName === category
+    )
+  }
+  this.applySort()
+}
 
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen

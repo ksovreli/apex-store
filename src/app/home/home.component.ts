@@ -20,22 +20,30 @@ export class HomeComponent {
   saleProducts: Product[] = []
 
   ngOnInit() {
-    this.saleProducts = this.productService.getSaleProducts().slice(0, 3)
+    this.productService.getProducts().subscribe(allProducts => {
+      this.saleProducts = allProducts
+        .filter(p => p.salePrice && p.salePrice > 0)
+        .slice(0, 3)
+    })
+
     this.route.params.subscribe(params => {
-      this.productId = params['id']
-      this.product = this.productService.getProductsById(this.productId)
+      this.productId = +params['id']
+
+      this.productService.getProducts().subscribe(allProducts => {
+        this.product = allProducts.find(p => p.id === this.productId)
+      })
     })
   }
 
   scrollTo(sectionId: string) {
-  let element = document.getElementById(sectionId)
-  
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' })
-  } 
-  
-  else {
-    this.router.navigate(['/home'], { fragment: sectionId })
+    let element = document.getElementById(sectionId)
+
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+
+    else {
+      this.router.navigate(['/home'], { fragment: sectionId })
+    }
   }
-}
 }

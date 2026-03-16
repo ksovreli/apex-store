@@ -18,12 +18,10 @@
             <button class="action-btn"><i class="fa-solid fa-circle-user"></i></button>
             <div class="dropdown-menu">
                 @if (isLoggedIn()) {
-                <a (click)="logout()">Logout</a>
-                }
-                
-                @else {
-                <a routerLink="/login">Login</a>
-                <a routerLink="/register">Register</a>
+                    <a (click)="logout()">Logout</a>
+                } @else {
+                    <a routerLink="/login">Login</a>
+                    <a routerLink="/register">Register</a>
                 }
             </div>
         </div>
@@ -38,7 +36,7 @@
         <button class="action-btn cart-btn" routerLink="/cart">
             <span class="icon"><i class="fa-solid fa-cart-arrow-down"></i></span>
             @if (cartCount() > 0) {
-            <span class="badge">{{ cartCount() }}</span>
+                <span class="badge">{{ cartCount() }}</span>
             }
         </button>
 

@@ -1,8 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
-import * as AOS from 'aos';
+import AOS from 'aos';
 
 @Component({
   selector: 'app-root',

@@ -39,6 +39,9 @@
 
                 @if (isDropdownOpen) {
                 <ul class="options-list">
+                    <li (click)="onOptionClick($event, 'Recommended')">
+                        Recommended
+                    </li>
                     <li (click)="onOptionClick($event, 'Price: Low to High')">
                         Price: Low to High
                     </li>

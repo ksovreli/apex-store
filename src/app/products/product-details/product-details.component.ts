@@ -26,20 +26,27 @@ export class ProductDetailsComponent {
   product?: Product
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
-      let id = Number(this.route.snapshot.paramMap.get('id'))
-      let foundProduct = this.productService.getProductsById(id)
+  this.route.params.subscribe(params => {
+    const id = Number(params['id'])
+    this.productId = id
 
-      if (!foundProduct) {
+    this.productService.getProductsById(id).subscribe({
+      next: (foundProduct) => {
+        if (!foundProduct) {
+          this.router.navigate(['/404'], { skipLocationChange: true })
+        }
+        
+        else {
+          this.product = foundProduct
+        }
+      },
+      error: (err) => {
+        console.error('API Error:', err)
         this.router.navigate(['/404'], { skipLocationChange: true })
       }
-
-      else {
-        this.productId = id
-        this.product = foundProduct
-      }
     })
-  }
+  })
+}
 
   add(product: Product) {
     if (this.authService.isLoggedIn()) {

@@ -3,15 +3,15 @@
   <header class="wishlist-header">
     <h1>YOUR GEAR SELECTION</h1>
     <p class="subtitle">
-      {{ wishlistService.items.length }} ITEMS PREPARED FOR DEPLOYMENT
+      {{ wishlistService.items().length }} ITEMS PREPARED FOR DEPLOYMENT
     </p>
   </header>
 
-  @if (wishlistService.items.length > 0) {
+  @if (wishlistService.items().length > 0) {
 
   <section class="wishlist-grid">
 
-    @for (item of wishlistService.items; track item.id) {
+    @for (item of wishlistService.items(); track item.id) {
 
     <article class="wishlist-card">
 

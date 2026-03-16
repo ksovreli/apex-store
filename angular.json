@@ -20,7 +20,10 @@
             "outputPath": "dist/backpack-store",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "allowedCommonJsDependencies": ["sweetalert2"],
+            "allowedCommonJsDependencies": [
+              "aos",
+              "sweetalert2"
+            ],
             "polyfills": [
               "zone.js"
             ],

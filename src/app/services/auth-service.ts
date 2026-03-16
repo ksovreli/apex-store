@@ -1,90 +1,61 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { User } from '../models/user';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
-
 export class AuthService {
-  
-  isLoggedIn = signal<boolean>(!!localStorage.getItem('userToken'))
+  private http = inject(HttpClient)
+  private apiUrl = 'https://localhost:7119/api/Auth'
+
+  isLoggedIn = signal<boolean>(!!localStorage.getItem('currentUser'))
+  currentUser = signal<User | null>(this.getStoredUser())
 
   constructor() {
-    this.autoLogin()
-  }
-
-  private getUsers(): User[] {
-    const users = localStorage.getItem('apex_users')
-    return users ? JSON.parse(users) : []
-  }
-
-  private generateRandomToken(): string {
-    const randomPart = Math.random().toString(36).substring(2)
-    const timePart = Date.now().toString(36)
-    return `apex_${randomPart}${timePart}`
-  }
-  private autoLogin() {
-    const token = localStorage.getItem('userToken')
-    if (!token) return
-
-    let users = this.getUsers()
-    let matchedUser = users.find(u => u.token === token)
-
-    if (matchedUser) {
-      localStorage.setItem('currentUser', JSON.stringify(matchedUser))
+    
+    const user = this.getStoredUser()
+    if (user) {
+      this.currentUser.set(user)
       this.isLoggedIn.set(true)
     }
-    
-    else {
-      this.logout()
+  }
+
+  private getStoredUser(): User | null {
+    const user = localStorage.getItem('currentUser')
+    try {
+      return user ? JSON.parse(user) : null
+    } catch {
+      return null
     }
   }
 
-  login(credentials: User): { success: boolean; message: string } {
-    let users = this.getUsers()
-    let userIndex = users.findIndex(
-      u => u.email === credentials.email && u.password === credentials.password
+  login(credentials: any): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/login`, credentials).pipe(
+      tap(user => {
+        this.saveSession(user)
+      })
     )
-
-    if (userIndex !== -1) {
-      let user = users[userIndex]
-
-      if (!user.token) {
-        user.token = this.generateRandomToken()
-        localStorage.setItem('apex_users', JSON.stringify(users))
-      }
-
-      localStorage.setItem('userToken', user.token)
-      localStorage.setItem('currentUser', JSON.stringify(user))
-      
-      this.isLoggedIn.set(true)
-      return { success: true, message: 'Login successful' }
-    }
-
-    return { success: false, message: 'Invalid email or password' }
   }
 
-  register(credentials: User): { success: boolean; message: string } {
-    const users = this.getUsers()
+  register(credentials: any): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/register`, credentials).pipe(
+      tap(user => {
+        this.saveSession(user)
+      })
+    )
+  }
 
-    if (users.find(u => u.email === credentials.email)) {
-      return { success: false, message: 'User already exists' }
-    }
-
-    let newUser: User = { 
-      ...credentials, 
-      token: this.generateRandomToken() 
-    }
-    
-    users.push(newUser)
-    localStorage.setItem('apex_users', JSON.stringify(users))
-
-    return this.login(credentials)
+  private saveSession(user: User) {
+    localStorage.setItem('currentUser', JSON.stringify(user))
+    this.currentUser.set(user)
+    this.isLoggedIn.set(true)
   }
 
   logout() {
-    localStorage.removeItem('userToken')
     localStorage.removeItem('currentUser')
+    this.currentUser.set(null)
     this.isLoggedIn.set(false)
   }
 }

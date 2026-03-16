@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { WishlistService } from '../services/wishlist-service';
 import { Product } from '../models/product';
-import Swal from 'sweetalert2';
 import { Router, RouterModule } from '@angular/router';
 import { CartService } from '../services/cart-service';
+import { AuthService } from '../services/auth-service';
 
 @Component({
   selector: 'app-wishlist',
@@ -13,40 +13,28 @@ import { CartService } from '../services/cart-service';
 })
 export class Wishlist {
   public wishlistService = inject(WishlistService)
-  public router = inject(Router)
   public cartService = inject(CartService)
+  private authService = inject(AuthService)
+  public router = inject(Router)
+
+  items = this.wishlistService.items
 
   ngOnInit() {
     this.wishlistService.refreshWishlist()
   }
 
   moveToCart(product: Product) {
-    let user = localStorage.getItem('currentUser')
-    if (!user){
-      this.showToast('Please login to add items to cart', 'info')
-      this.router.navigateByUrl("/login")
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigateByUrl('/login')
+      return
     }
 
-    else {
-      this.cartService.addToCart(product)
-    }
+    this.cartService.addToCart(product)
+    
+    this.wishlistService.toggleWishlist(product)
   }
 
-  clearAll() {
-    this.wishlistService.items = []
-    this.wishlistService.saveItems([])
+  removeItem(product: Product) {
+    this.wishlistService.toggleWishlist(product)
   }
-
-  private showToast(title: string, icon: 'success' | 'info') {
-      Swal.fire({
-        title: title,
-        icon: icon,
-        background: '#121212',
-        color: '#fff',
-        timer: 1500,
-        showConfirmButton: false,
-        toast: true,
-        position: 'top-end'
-      })
-    }
 }

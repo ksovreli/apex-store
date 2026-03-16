@@ -1,86 +1,79 @@
-import { inject, Injectable } from '@angular/core';
-import Swal from 'sweetalert2';
+import { inject, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Product } from '../models/product';
 import { AuthService } from './auth-service';
-import { User } from '../models/user';
+import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CartService {
+  
+  private http = inject(HttpClient)
+  private auth = inject(AuthService)
+  private apiUrl = 'https://localhost:7119/api/Basket'
+
+  items = signal<Product[]>([])
+  private isRefreshing = false
 
   constructor() {
     this.refreshCart()
   }
 
-  items: Product[] = []
-  private auth = inject(AuthService)
+  refreshCart() {
+    const userId = this.auth.currentUser()?.id
+    
+    if (!userId || this.isRefreshing) return
 
-  getCartKey() {
-    let userJson = localStorage.getItem('currentUser')
-    if (userJson) {
-      let user = JSON.parse(userJson)
-      return `cart_${user.email}`
-    }
-    return 'cart_guest'
+    this.isRefreshing = true 
+
+    this.http.get<Product[]>(`${this.apiUrl}/${userId}`)
+      .subscribe({
+        next: (data) => {
+          this.items.set(data)
+          this.isRefreshing = false
+        },
+        error: (err) => {
+          this.isRefreshing = false
+          console.error('Cart refresh failed', err)
+        }
+      })
   }
 
   addToCart(product: Product) {
-    this.items = this.getItems()
-
-    let existingItem = this.items.find(item => item.id === product.id)
-
-    if (existingItem) {
-      existingItem.quantity = (existingItem.quantity ?? 0) + 1
+    const user = this.auth.currentUser()
+    if (!user) {
+      this.showToast('Please login first', 'info')
+      return
     }
 
-    else {
-      this.items.push({ ...product, quantity: 1 })
+    const dto = {
+      userId: user.id?.toString(),
+      backpackId: product.id,
+      quantity: 1
     }
 
-    this.saveItems(this.items)
-    this.showToast('Added to cart!', 'success')
+    this.http.post(`${this.apiUrl}/AddToBasket`, dto)
+      .subscribe({
+        next: () => {
+          this.refreshCart()
+          this.showToast('Added to cart!', 'success')
+        }
+      })
   }
 
-  updateQuantity(index: number, delta: number) {
-    const items = this.getItems()
-    if (items[index]) {
-      items[index].quantity = (items[index].quantity ?? 1) + delta
-      
-      if (items[index].quantity <= 0) {
-        items.splice(index, 1)
-      }
-      
-      this.saveItems(items)
-    }
+  updateQuantity(basketItemId: number, newQuantity: number) {
+    if (newQuantity < 1) return 
+    this.http.put(`${this.apiUrl}/${basketItemId}?quantity=${newQuantity}`, {})
+      .subscribe(() => this.refreshCart())
   }
 
-  removeItem(index: number) {
-    const items = this.getItems()
-    items.splice(index, 1)
-    this.saveItems(items)
-  }
-
-  getItems(): Product[] {
-    let key = this.getCartKey()
-    let savedCart = localStorage.getItem(key)
-    return savedCart ? JSON.parse(savedCart) : []
-  }
-
-  saveItems(items: Product[]) {
-    let key = this.getCartKey()
-    localStorage.setItem(key, JSON.stringify(items))
-  }
-
-  refreshCart() {
-    this.items = this.getItems()
-  }
-
-  clearCart() {
-    let key = this.getCartKey()
-    this.items = []
-    localStorage.removeItem(key)
-    return this.items
+  removeItem(basketItemId: number) {
+    this.http.delete(`${this.apiUrl}/${basketItemId}`)
+      .subscribe(() => {
+        this.refreshCart()
+        this.showToast('Removed from cart', 'info')
+      })
   }
 
   private showToast(title: string, icon: 'success' | 'info') {
@@ -96,4 +89,3 @@ export class CartService {
     })
   }
 }
-

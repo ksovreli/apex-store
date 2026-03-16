@@ -1,60 +1,62 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Product } from '../models/product';
+import { AuthService } from './auth-service';
 import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WishlistService {
-  items: Product[] = []
 
-  ngOnInit(){
-    this.refreshWishlist()
-  }
+  private http = inject(HttpClient)
+  private auth = inject(AuthService)
+  private apiUrl = 'https://localhost:7119/api/Wishlist'
 
-  getWishListKey() {
-    let userJson = localStorage.getItem('currentUser')
-    if (userJson) {
-      let user = JSON.parse(userJson)
-      return `wishlist_${user.email}`
+  items = signal<Product[]>([])
+
+  refreshWishlist() {
+    const user = this.auth.currentUser()
+    if (!user) {
+      this.items.set([])
+      return
     }
-    return 'wishlist_guest'
+
+    this.http.get<Product[]>(`${this.apiUrl}/${user.id}`)
+      .subscribe({
+        next: (data) => {
+          this.items.set(data)
+        },
+        error: (err) => console.error('Wishlist refresh failed', err)
+      })
   }
 
   toggleWishlist(product: Product) {
-    this.items = this.getItems()
-    let index = this.items.findIndex(item => item.id === product.id)
-
-    if (index > -1) {
-      this.items.splice(index, 1)
-      this.showToast('Removed from wishlist', 'info')
-    } 
-    
-    else {
-      this.items.push(product);
-      this.showToast('Added to wishlist!', 'success')
+    const user = this.auth.currentUser()
+    if (!user) {
+      this.showToast('Please login to save favorites', 'info')
+      return
     }
 
-    this.saveItems(this.items)
+    const dto = { 
+      userId: user.id?.toString(), 
+      backpackId: product.id 
+    }
+
+    this.http.post(`${this.apiUrl}/toggle`, dto)
+      .subscribe({
+        next: (response: any) => {
+          this.refreshWishlist()
+          const msg = response.status === 'added' ? 'Added to wishlist!' : 'Removed from wishlist'
+          const icon = response.status === 'added' ? 'success' : 'info'
+          this.showToast(msg, icon)
+        },
+        error: (err) => console.error('Toggle failed', err)
+      })
   }
 
-  getItems(): Product[] {
-    let key = this.getWishListKey()
-    let savedWishlist = localStorage.getItem(key)
-    return savedWishlist ? JSON.parse(savedWishlist) : []
-  }
-
-  saveItems(items: Product[]) {
-    let key = this.getWishListKey()
-    localStorage.setItem(key, JSON.stringify(items))
-  }
-
-  refreshWishlist() {
-    this.items = this.getItems()
-  }
-
-  isInWishlist(productId: number | string): boolean {
-    return this.getItems().some(item => item.id === productId)
+  isInWishlist(productId: number): boolean {
+    return this.items().some(item => item.id === productId)
   }
 
   private showToast(title: string, icon: 'success' | 'info') {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CartService } from '../services/cart-service';
 import { AuthService } from '../services/auth-service';
@@ -12,44 +12,46 @@ import { WishlistService } from '../services/wishlist-service';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
+
   menuOpen = false
 
-  constructor(private router: Router, private cartService: CartService, private authService: AuthService, private wishListService: WishlistService) { }
-  
-  isLoggedIn(): boolean{
+  public router = inject(Router)
+  public cartService = inject(CartService)
+  public authService = inject(AuthService)
+  public wishListService = inject(WishlistService)
+
+  isLoggedIn(): boolean {
     return this.authService.isLoggedIn()
   }
 
-  cartCount(): number{
-    this.cartService.refreshCart()
-    return this.cartService.getItems().length
+  cartCount(): number {
+    return this.cartService.items().length
   }
 
-  wishlistCount() {
-    return this.wishListService.items.length;
+  wishlistCount(): number {
+    return this.wishListService.items().length
   }
 
-  logout(){
+  logout() {
     this.authService.logout()
     this.menuOpen = false
     this.router.navigateByUrl('/home')
   }
+
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   scrollTo(sectionId: string) {
-  if (this.router.url === '/home' || this.router.url === '/') {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
+    if (this.router.url === '/home' || this.router.url === '/') {
+      const element = document.getElementById(sectionId)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' })
+      }
+    } else {
+      this.router.navigate(['/home'], { fragment: sectionId })
     }
   }
-  
-  else {
-    this.router.navigate(['/home'], { fragment: sectionId })
-  }
-}
 
   navigateToHome() {
     this.router.navigateByUrl('/home')
